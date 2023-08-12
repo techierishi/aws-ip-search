@@ -1,0 +1,30 @@
+name: Docker_Build_Push
+
+on:
+  workflow_run:
+    workflows: ["Java_Gradle_CI"]
+    types:
+      - completed
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: 'Build the Docker image'
+      run: docker build --build-arg JAR_FILE=ip-range-search-0.0.1-SNAPSHOT.jar -t ghcr.io/techierishi/ip-range-search:latest .
+    
+    - name: 'Login to GitHub Container Registry'
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ${{github.actor}}
+        password: ${{secrets.GITHUB_TOKEN}}
+
+    - name: 'Build Inventory Image'
+      run: |
+        docker push ghcr.io/techierishi/ip-range-search:latest

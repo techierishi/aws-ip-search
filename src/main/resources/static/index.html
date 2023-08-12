@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>IP Search Form</title>
+	<link rel="shortcut icon" type="image/png" th:href="@{/favicon.png}" />
+
+	<style>
+    .app {
+      padding: 1%;
+      width: 98%;
+      background-color: #eee;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+      align-content: center;
+    }
+
+
+    form {
+      width: 100%;
+      position: relative;
+      display: flex;
+    }
+
+    form input {
+      width: 100%;
+      border: 3px solid #00B4CC;
+      border-right: none;
+      padding: 5px;
+      height: 20px;
+      border-radius: 5px 0 0 5px;
+      outline: none;
+      color: #9DBFAF;
+    }
+
+
+    form input:focus {
+      color: #00B4CC;
+    }
+
+    form button {
+      width: 100px;
+      height: 35.5px;
+      border: 1px solid #00B4CC;
+      background: #00B4CC;
+      text-align: center;
+      color: #fff;
+      border-radius: 0 5px 5px 0;
+      cursor: pointer;
+      font-size: 20px;
+    }
+
+    .app ul {
+      list-style: none;
+      padding: 0
+    }
+
+    .app ul li {
+      list-style: none;
+      padding: 5px;
+      border-bottom: 1px solid #DDD;
+    }
+
+    .app ul li span {
+      margin: 5px;
+      padding: 5px;
+    }
+
+    .err-msg {
+      padding: 5px;
+      border: 1px solid #f3d2d2;
+      border-radius: 5px;
+      background-color: #feeeee;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+
+<body>
+<div class="app" id="app"></div>
+<script type="module">
+    import { h, render } from 'https://cdn.skypack.dev/preact';
+    import { useState } from 'https://cdn.skypack.dev/preact/hooks';
+    import { html } from 'https://cdn.skypack.dev/htm/preact';
+
+    function processResponse(response) {
+      return new Promise((resolve, reject) => {
+        let func;
+        if (response.status < 400) {
+          response.json().then(data => resolve({ 'status': response.status, 'data': data }));
+        } else {
+          response.text().then(data => reject({ 'status': response.status, 'data': data }));
+        }
+      })
+    }
+
+    function SearchForm({ onSubmit }) {
+      return html`
+      <form onSubmit=${(event) => {
+          event.preventDefault();
+          const formData = new FormData(event.target);
+          const searchQuery = formData.get('search');
+          onSubmit(searchQuery);
+        }}>
+        <input type="text" name="search" placeholder="Enter region. e.g 'EU', 'SA'" />
+        <button type="submit">Search</button>
+      </form>
+      `;
+    }
+
+    function ResultsList({ items }) {
+      return html`
+          <ul>
+            ${items.prefixes.map((item) => html`<li>
+            <span>
+              ${item.ip_prefix}
+            </span>
+              <span>
+              ${item.region}
+            </span>
+            <span>
+              ${item.service}
+            </span>
+            </li>`)}
+          </ul>
+          <ul>
+            ${items.ipv6_prefixes.map((item) => html`<li>
+            <span>
+              ${item.ipv6_prefix}
+            </span>
+              <span>
+              ${item.region}
+            </span>
+            <span>
+              ${item.service}
+            </span>
+            </li>`)}
+          </ul>
+          `;
+    }
+
+
+
+    function App() {
+      const [searchResults, setSearchResults] = useState({
+        "prefixes": [],
+        "ipv6_prefixes": []
+      });
+      const [errorMsg, setErrorMsg] = useState(null)
+
+      function handleSearch(query) {
+        fetch(`http://localhost:8080/api/v1/ip-range?region=${query}&dt=json`)
+          .then(processResponse)
+          .then(data => {
+            setSearchResults(data.data)
+            setErrorMsg(null)
+          })
+          .catch(error => {
+            console.error('Error fetching data:', error)
+            setErrorMsg(error.data)
+          });
+      }
+
+      function renderError() {
+        if (errorMsg) {
+          return html`<div class="err-msg"> ${errorMsg} </div>`;
+        } else {
+          return null;
+        }
+      }
+      return html`
+      <div class="app-wrapper">
+        ${renderError()}
+
+        <${SearchForm} onSubmit=${handleSearch} />
+        <${ResultsList} items=${searchResults} />
+      </div>
+      `;
+    }
+
+    render(html`<${App} name="App" />`, document.getElementById("app"));
+  </script>
+</body>
+
+</html>
