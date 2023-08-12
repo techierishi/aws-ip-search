@@ -27,4 +27,4 @@ jobs:
 
     - name: 'Build Inventory Image'
       run: |
-        docker push ghcr.io/techierishi/ip-range-search:latest
+        docker push ghcr.io/techierishi/aws-ip-search:latest
