@@ -6,8 +6,12 @@ import com.rishi.iprangesearch.factory.DataAdapterFactory;
 import com.rishi.iprangesearch.model.IpRange;
 import com.rishi.iprangesearch.service.IpRangeSearchService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.RequestNotPermitted;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -27,6 +31,7 @@ public class IpRangeSearchController {
 
     @GetMapping(produces = MediaType.TEXT_PLAIN_VALUE)
     @CircuitBreaker(name = "getIpRange", fallbackMethod = "fallBackIpRange")
+    @RateLimiter(name = "getIpRange", fallbackMethod = "rateLimitingFallback")
     public ResponseEntity getIpRange(@RequestParam(name = "region", required = false) String region, @RequestParam(name = "dt", required = false) String dt) {
 
         IpRange ipRange = null;
@@ -54,4 +59,13 @@ public class IpRangeSearchController {
         return ResponseEntity.internalServerError().body("Upstream service down!");
     }
 
+    public ResponseEntity rateLimitingFallback(String id, String arg, Throwable throwable) {
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("Retry-After", "60s");
+
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .headers(responseHeaders)
+                .body("Too many requests - Retry in a moment");
+    }
 }

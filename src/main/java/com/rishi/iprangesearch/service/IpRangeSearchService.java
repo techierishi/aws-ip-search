@@ -21,7 +21,7 @@ public class IpRangeSearchService {
     @Autowired
     private RegionRepository regionRepository;
 
-    @Value("${otto.config.ip_range_api}")
+    @Value("${rishi.config.ip_range_api}")
     private String ipRangeApi;
 
     private RestTemplate restTemplate;

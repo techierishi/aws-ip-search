@@ -23,7 +23,7 @@ A simple service to search IP using AWS region.
 > 2. Region prefix is persisted in in-memory db so that validation can happen dynamically.
 
 ## Usage
-* Run `docker run --rm -p 8080:8080 ghcr.io/techierishi/ip-range-search:latest`
+* Run `docker run --rm -p 8080:8080 ghcr.io/techierishi/aws-ip-search:latest`
 * Open browser and access the application by entering `http://localhost:8080/api/v1/ip-range?region=<region-prefix>`
 * To change the output format to json `&dt=json`
 * Optionally, you can access `http://localhost:8080/` to access th *UI* (Screenshot below)
@@ -36,8 +36,8 @@ A simple service to search IP using AWS region.
 
 1. Clone the repository.
 ```
-git clone https://github.com/techierishi/ip-range-search.git
-cd ip-range-search/
+git clone https://github.com/techierishi/aws-ip-search.git
+cd aws-ip-search/
 ```
 
 2. Build the project.
@@ -53,12 +53,12 @@ cd ip-range-search/
 ### Build and run using Docker
 1. Build the docker image.
 ```
-docker build --build-arg JAR_FILE=ip-range-search-0.0.1-SNAPSHOT.jar -t ghcr.io/techierishi/ip-range-search:latest .
+docker build --build-arg JAR_FILE=aws-ip-search-0.0.1-SNAPSHOT.jar -t ghcr.io/techierishi/aws-ip-search:latest .
 ```
 
 2. Run the application in docker container.
 ```
-docker run --rm -p 8080:8080 ghcr.io/techierishi/ip-range-search:latest
+docker run --rm -p 8080:8080 ghcr.io/techierishi/aws-ip-search:latest
 ```
 
 ### CI/CD
@@ -69,11 +69,9 @@ docker run --rm -p 8080:8080 ghcr.io/techierishi/ip-range-search:latest
 
 ## Improvement Areas
 * Authentication/Authorization
-* More logging
 * Separation of caching
 * Faster search algorithm
 * Use `Transfer-Encoding: chunked` for response. Reactive abstraction on java side
-* Rate limiting or Load Shedding
 * Add Open API specification
 * Possible code cleanups
 

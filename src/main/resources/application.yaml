@@ -23,7 +23,7 @@ spring:
 
 server:
   port: 8080
-  application.name: ip-range-search
+  application.name: aws-ip-search
   servlet:
     context-path: /
 
@@ -45,6 +45,16 @@ resilience4j.circuitbreaker:
       failureRateThreshold: 50
       eventConsumerBufferSize: 10
 
-otto:
+resilience4j.ratelimiter:
+  instances:
+    getIpRange:
+      registerHealthIndicator: true
+      limitRefreshPeriod: 1s
+      limitForPeriod: 2
+      timeoutDuration: 0s
+  metrics:
+    enabled: 'true'
+
+rishi:
   config:
     ip_range_api: "https://ip-ranges.amazonaws.com/ip-ranges.json"
