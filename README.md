@@ -12,6 +12,7 @@ A simple service to search IP using AWS region.
 * Search IP Prefixes based on the AWS Region
 * [**Caching** using caffeine](https://github.com/ben-manes/caffeine) for decrease the latency for use. [Link to CachedRestTemplate](./src/main/com/otto/iprangesearch/util/CachedRestTemplate.java)
 * [**Circuitbreaker** using resilience4j](https://github.com/resilience4j/resilience4j) to detect failures and encapsulates the logic of preventing a failure.
+* [**RaterLimiter** using resilience4j](https://github.com/resilience4j/resilience4j) to prevent huge traffic coming to the controller.
 * [**Spring Actuator**](https://spring.io/guides/gs/actuator-service/) for health and metrics.
 * **UI** for easy searching. 
 * Multiple data adapter for json, csv output
