@@ -1,2 +1,2 @@
 # INFO.md
-This is a sample file created by emend.
+This is a test file created by emend.
