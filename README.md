@@ -78,3 +78,5 @@ docker run --rm -p 8080:8080 ghcr.io/techierishi/aws-ip-search:latest
 
 
 *Thank you :)*
+
+last_updated: 23.12.2025
